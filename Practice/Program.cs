@@ -56,6 +56,9 @@ public static class Program
 
         var ingredients = new List<string>();
 
+        //TODO: SORT LIKED BY DESCENDING VALUE , REMEMBER TO REMOVE DISATISFIED CUSTOMERS' INGREDIENTS
+        //TODO: CUSTOMER CLASS
+
         foreach (var ingredient in liked_ingredients)
         {
             if (disliked_ingredients.ContainsKey(ingredient.Key))
