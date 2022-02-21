@@ -19,7 +19,7 @@ public static class Program
 {
     static readonly string ASSEMBLY_PATH    = AppDomain.CurrentDomain.BaseDirectory;
     static readonly string PROJECT_DIR_PATH = ASSEMBLY_PATH.Substring(0, ASSEMBLY_PATH.IndexOf("\\bin"));
-    static readonly string INPUTS_DIR_PATH  = Path.Combine(PROJECT_DIR_PATH, "Inputs");
+    static readonly string INPUTS_DIR_PATH  = Path.Combine(PROJECT_DIR_PATH, "inputs");
 
 
     public static void Main()
