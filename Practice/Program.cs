@@ -2,10 +2,6 @@
 
 namespace Practice;
 
-
-
-
-
 static class Files
 {
     public const string A = "a_an_example.in.txt";
@@ -18,19 +14,21 @@ static class Files
 public static class Program
 {
     static readonly string ASSEMBLY_PATH    = AppDomain.CurrentDomain.BaseDirectory;
-    static readonly string PROJECT_DIR_PATH = ASSEMBLY_PATH.Substring(0, ASSEMBLY_PATH.IndexOf("\\bin"));
-    static readonly string INPUTS_DIR_PATH  = Path.Combine(PROJECT_DIR_PATH, "Inputs");
+    static readonly string PROJECT_DIR_PATH = ASSEMBLY_PATH[..ASSEMBLY_PATH.IndexOf("\\bin", StringComparison.Ordinal)];
+    static readonly string INPUTS_DIR_PATH  = Path.Combine(PROJECT_DIR_PATH, "inputs");
 
 
     public static void Main()
     {
         Directory.SetCurrentDirectory(INPUTS_DIR_PATH);
-        const string FILE = Files.A;
+        const string FILE = Files.E;
 
         Dictionary<string, int> liked_ingredients    = new();
         Dictionary<string, int> disliked_ingredients = new();
         var                     liked_mode           = true;
+
         #region parsing
+
         using (var file = new StreamReader(FILE))
         {
             var line = file.ReadLine();
@@ -46,7 +44,7 @@ public static class Program
 
 
                 var dict = liked_mode ? liked_ingredients : disliked_ingredients;
-                form_dictionary(dict , words);
+                form_dictionary(dict, words);
 
                 liked_mode = !liked_mode;
             }
@@ -56,8 +54,14 @@ public static class Program
 
         var ingredients = new List<string>();
 
-        //TODO: SORT LIKED BY DESCENDING VALUE , REMEMBER TO REMOVE DISATISFIED CUSTOMERS' INGREDIENTS
-        //TODO: CUSTOMER CLASS
+        //Sorting
+        liked_ingredients =
+            (from dict in liked_ingredients orderby dict.Value descending select dict).ToDictionary(
+                dict => dict.Key,
+                dict => dict.Value);
+
+
+        // TODO : CUSTOMER CLASS REMEMBER TO REMOVE DISSATISFIED CUSTOMERS' INGREDIENTS
 
         foreach (var ingredient in liked_ingredients)
         {
@@ -80,10 +84,8 @@ public static class Program
             output += $" {ingredient}";
         }
 
-        using var file_out = new StreamWriter("../output.txt");
+        using var file_out = new StreamWriter($"../outputs/{FILE}.out.txt");
         file_out.Write(output);
-
-
     }
 
     private static void form_dictionary(Dictionary<string, int> ingredients, string[] words)
