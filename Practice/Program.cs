@@ -25,7 +25,7 @@ public static class Program
     public static void Main()
     {
         Directory.SetCurrentDirectory(INPUTS_DIR_PATH);
-        const string FILE = Files.A;
+        const string FILE = Files.E;
 
         Dictionary<string, int> liked_ingredients    = new();
         Dictionary<string, int> disliked_ingredients = new();
@@ -77,7 +77,7 @@ public static class Program
             output += $" {ingredient}";
         }
 
-        using var file_out = new StreamWriter("../output.txt");
+        using var file_out = new StreamWriter($"../outputs/{FILE}.out.txt");
         file_out.Write(output);
 
 
