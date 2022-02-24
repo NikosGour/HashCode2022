@@ -22,13 +22,14 @@ internal static class Program
     {
         Directory.SetCurrentDirectory(INPUTS_DIR_PATH);
 
-        const string FILE = Files.A;
+        const string FILE = Files.C;
 
         int           num_of_contributors, num_of_projects;
         Contributor[] contributors;
         Project[]     projects;
 
         Stopwatch sw = Stopwatch.StartNew();
+
         #region parsing
 
         using (var file = new StreamReader(FILE))
@@ -129,12 +130,67 @@ internal static class Program
                     }
                 }
 
+
                 if (project.contributors.All(x => x is not null))
                 {
                     project.running = true;
                 }
+
+                // Means we havent filled the roles
                 else
                 {
+                    for (int j = 0; j < project.contributors.Length; j++)
+                    {
+                        Contributor contributor = project.contributors[j];
+
+                        if (contributor is not null)
+                        {
+                            continue;
+                        }
+
+                        Skill skill = project.skills[j];
+
+                        var mentors = (from c in project.contributors
+                                       where c is not null
+                                          && c.skills.Contains(skill)
+                                          && c.skills.Find(x => x.name == skill.name)!.level >= skill.level
+                                       select c).ToArray();
+
+                        if (mentors.Length > 0)
+                        {
+                            Contributor mentor = mentors[0];
+
+                            foreach (var potential_contributor in contributors)
+                            {
+                                if (skill.level == 1)
+                                {
+                                    Contributor less_capable_contr = contributors.ToList()
+                                        .Find(y => y.skills.Count
+                                                == contributors.ToList()
+                                                               .Min(x => x.skills.Count))!;
+
+                                    project.contributors[j]        = less_capable_contr;
+                                    less_capable_contr.is_occupied = true;
+                                    break;
+                                }
+
+                                if (potential_contributor.skills.Contains(skill))
+                                {
+                                    if (potential_contributor.skills.Find(x => x.name == skill.name)!.level
+                                     >= skill.level)
+                                    {
+                                        if (!potential_contributor.is_occupied)
+                                        {
+                                            project.contributors[j]           = potential_contributor;
+                                            potential_contributor.is_occupied = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     project.running = false;
                     for (var j = 0; j < project.contributors.Length; j++)
                     {
@@ -159,11 +215,19 @@ internal static class Program
                             var contributor = project.contributors[j];
                             output += $"{contributor.name} ";
 
+
                             Skill project_skill = project.skills[j];
-                            if (project_skill.level
-                             >= contributor.skills.Find(x => x.name == project_skill.name)!.level)
+                            if (contributor.skills.Contains(project_skill))
                             {
-                                contributor.skills.Find(x => x.name == project_skill.name)!.level++;
+                                if (project_skill.level
+                                 >= contributor.skills.Find(x => x.name == project_skill.name)!.level)
+                                {
+                                    contributor.skills.Find(x => x.name == project_skill.name)!.level++;
+                                }
+                            }
+                            else
+                            {
+                                contributor.skills.Add(new Skill(project_skill.name, 1));
                             }
 
 
@@ -182,7 +246,7 @@ internal static class Program
 
             Console.WriteLine(days);
             days++;
-        } while (completed_projects < num_of_projects);
+        } while (days < 10000); //while (completed_projects < num_of_projects);
 
         Console.WriteLine("Finished\n~~~~~~~~~~~~");
 
