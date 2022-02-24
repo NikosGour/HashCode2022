@@ -18,11 +18,18 @@ internal static class Program
     static readonly string PROJECT_DIR_PATH = ASSEMBLY_PATH.Substring(0, ASSEMBLY_PATH.IndexOf("\\bin"));
     static readonly string INPUTS_DIR_PATH  = Path.Combine(PROJECT_DIR_PATH, "inputs");
 
+
     public static void Main()
+    {
+        Main2();
+        Console.ReadLine();
+    }
+
+    public static void Main2()
     {
         Directory.SetCurrentDirectory(INPUTS_DIR_PATH);
 
-        const string FILE = Files.C;
+        const string FILE = Files.B;
 
         int           num_of_contributors, num_of_projects;
         Contributor[] contributors;
@@ -177,7 +184,7 @@ internal static class Program
                                 if (potential_contributor.skills.Contains(skill))
                                 {
                                     if (potential_contributor.skills.Find(x => x.name == skill.name)!.level
-                                     >= skill.level)
+                                     <= skill.level - 1)
                                     {
                                         if (!potential_contributor.is_occupied)
                                         {
@@ -191,14 +198,21 @@ internal static class Program
                         }
                     }
 
-                    project.running = false;
-                    for (var j = 0; j < project.contributors.Length; j++)
+                    if (project.contributors.All(x => x is not null))
                     {
-                        var contributor = project.contributors[j];
-                        if (contributor is not null)
+                        project.running = true;
+                    }
+                    else
+                    {
+                        project.running = false;
+                        for (var j = 0; j < project.contributors.Length; j++)
                         {
-                            contributor.is_occupied = false;
-                            project.contributors[j] = null;
+                            var contributor = project.contributors[j];
+                            if (contributor is not null)
+                            {
+                                contributor.is_occupied = false;
+                                project.contributors[j] = null;
+                            }
                         }
                     }
                 }
@@ -246,7 +260,7 @@ internal static class Program
 
             Console.WriteLine(days);
             days++;
-        } while (days < 10000); //while (completed_projects < num_of_projects);
+        } while (days < 5000); //while (completed_projects < num_of_projects);
 
         Console.WriteLine("Finished\n~~~~~~~~~~~~");
 
