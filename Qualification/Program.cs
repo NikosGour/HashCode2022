@@ -265,7 +265,7 @@ internal static class Program
 
             Console.WriteLine(days);
             days++;
-        } while (days < 10); //while (completed_projects < num_of_projects);
+        } while (days < 1000); //while (completed_projects < num_of_projects);
 
         Console.WriteLine("Finished\n~~~~~~~~~~~~");
 
